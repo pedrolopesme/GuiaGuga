@@ -9,6 +9,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.guiaguga.guiaguga.domain.CoffeeShop
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -35,9 +36,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        for (coffeShop in getMarkers()) {
+            mMap.addMarker(
+                    MarkerOptions()
+                            .position(LatLng(coffeShop.lat, coffeShop.long))
+                            .title(coffeShop.name))
+        }
+
+        val mapInitialPosition = LatLng(getMarkers().first().lat, getMarkers().first().long)
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mapInitialPosition))
+
     }
+
+    /**
+     * Returns all locations to be marked on the map
+     */
+    fun getMarkers(): List<CoffeeShop> {
+        return listOf(
+                CoffeeShop("Starbucks", -23.0042166, -43.3181479)
+        )
+    }
+
 }

@@ -10,8 +10,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.guiaguga.guiaguga.domain.CoffeeShop
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import com.google.android.gms.maps.model.Marker
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(),
+        OnMapReadyCallback,
+        OnMarkerClickListener,
+        AnkoLogger {
 
     private lateinit var mMap: GoogleMap
 
@@ -35,6 +42,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.setOnMarkerClickListener(this)
+        mMap.setMinZoomPreference(16.00f)
 
         for (coffeShop in getMarkers()) {
             mMap.addMarker(
@@ -55,6 +64,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return listOf(
                 CoffeeShop("Starbucks", -23.0042166, -43.3181479)
         )
+    }
+
+    /**
+     * Map Marker onClick Listener
+     */
+    override fun onMarkerClick(marker : Marker): Boolean {
+        info("Marker clicked - " + marker)
+        return true
     }
 
 }

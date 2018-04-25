@@ -1,21 +1,19 @@
 package com.guiaguga.guiaguga
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.guiaguga.guiaguga.domain.CoffeeShop
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
-import com.google.android.gms.maps.model.Marker
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
-import org.jetbrains.anko.info
 
 class MapsActivity : AppCompatActivity(),
         OnMapReadyCallback,
@@ -26,14 +24,16 @@ class MapsActivity : AppCompatActivity(),
     private lateinit var mMap: GoogleMap
 
     // Coffeeshop name
-    val name = find<TextView>(R.id.tv_shopName)
+    private lateinit var name: TextView
 
     // Map creating relation between markers id and coffeeShops
-    var coffeShopMarkers: HashMap<String, CoffeeShop> = HashMap()
+    private var coffeShopMarkers: HashMap<String, CoffeeShop> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        name = find<TextView>(R.id.tv_shopName)
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -54,7 +54,9 @@ class MapsActivity : AppCompatActivity(),
         mMap.setOnMarkerClickListener(this)
         mMap.setMinZoomPreference(16.00f)
 
-        for ((index, coffeShop) in getCoffeshops().withIndex()) {
+        val coffeshops = getCoffeshops()
+
+        for ((index, coffeShop) in coffeshops.withIndex()) {
             val markerOption = MarkerOptions()
                     .position(LatLng(coffeShop.lat, coffeShop.long))
                     .title(coffeShop.name);
@@ -63,15 +65,24 @@ class MapsActivity : AppCompatActivity(),
             coffeShopMarkers.put(marker.id, coffeShop)
         }
 
-        val coffeeShop = getCoffeshops().first()
-        val mapInitialPosition = LatLng(coffeeShop.lat, coffeeShop.long)
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mapInitialPosition))
+        renderInitialCoffeeShop(coffeshops)
     }
+
+    /**
+     *  Decides and shows the first CoffeeShop on the map
+     */
+    private fun renderInitialCoffeeShop(coffeeShops: List<CoffeeShop>) {
+        val initialCoffeeShop = getCoffeshops().first()
+        val mapInitialPosition = LatLng(initialCoffeeShop.lat, initialCoffeeShop.long)
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mapInitialPosition))
+        displayCoffeeShop(initialCoffeeShop)
+    }
+
 
     /**
      * Returns all locations to be marked on the map
      */
-    fun getCoffeshops(): List<CoffeeShop> {
+    private fun getCoffeshops(): List<CoffeeShop> {
         return listOf(
                 CoffeeShop("Starbucks", -23.0042166, -43.3181479)
         )
@@ -81,13 +92,18 @@ class MapsActivity : AppCompatActivity(),
      * Map Marker onClick Listener
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-
         val coffeeShop = coffeShopMarkers.get(marker.id)
-
-        if(coffeeShop != null)
-            name.text = coffeeShop.name
-
+        if (coffeeShop != null) {
+            displayCoffeeShop(coffeeShop)
+        }
         return true
+    }
+
+    /**
+     * Given a CoffeeShop, display its info
+     */
+    private fun displayCoffeeShop(coffeeShop: CoffeeShop) {
+        name.text = coffeeShop.name
     }
 
 }

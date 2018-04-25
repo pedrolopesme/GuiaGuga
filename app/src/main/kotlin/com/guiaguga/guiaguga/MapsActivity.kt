@@ -56,13 +56,13 @@ class MapsActivity : AppCompatActivity(),
 
         val coffeshops = getCoffeshops()
 
-        for ((index, coffeShop) in coffeshops.withIndex()) {
+        for (coffeShop in coffeshops) {
             val markerOption = MarkerOptions()
                     .position(LatLng(coffeShop.lat, coffeShop.long))
-                    .title(coffeShop.name);
+                    .title(coffeShop.name)
 
             val marker = mMap.addMarker(markerOption)
-            coffeShopMarkers.put(marker.id, coffeShop)
+            coffeShopMarkers[marker.id] = coffeShop
         }
 
         renderInitialCoffeeShop(coffeshops)
@@ -72,7 +72,7 @@ class MapsActivity : AppCompatActivity(),
      *  Decides and shows the first CoffeeShop on the map
      */
     private fun renderInitialCoffeeShop(coffeeShops: List<CoffeeShop>) {
-        val initialCoffeeShop = getCoffeshops().first()
+        val initialCoffeeShop = coffeeShops.first()
         val mapInitialPosition = LatLng(initialCoffeeShop.lat, initialCoffeeShop.long)
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mapInitialPosition))
         displayCoffeeShop(initialCoffeeShop)
@@ -92,7 +92,7 @@ class MapsActivity : AppCompatActivity(),
      * Map Marker onClick Listener
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        val coffeeShop = coffeShopMarkers.get(marker.id)
+        val coffeeShop = coffeShopMarkers[marker.id]
         if (coffeeShop != null) {
             displayCoffeeShop(coffeeShop)
         }

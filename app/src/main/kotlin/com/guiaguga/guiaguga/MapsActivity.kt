@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.guiaguga.guiaguga.domain.CoffeeShop
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
+import java.util.concurrent.TimeUnit
 
 class MapsActivity : AppCompatActivity(),
         OnMapReadyCallback,
@@ -30,6 +31,7 @@ class MapsActivity : AppCompatActivity(),
     private var coffeShopMarkers: HashMap<String, CoffeeShop> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        doPreloading()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         name = find<TextView>(R.id.tv_shopName)
@@ -38,6 +40,14 @@ class MapsActivity : AppCompatActivity(),
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    /**
+     * Loading basic data to open the app
+     */
+    private fun doPreloading() {
+        // Load coffeshops here
+        setTheme(R.style.AppTheme)
     }
 
     /**
